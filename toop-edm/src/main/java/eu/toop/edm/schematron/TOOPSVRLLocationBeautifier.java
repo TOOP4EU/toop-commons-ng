@@ -1,0 +1,50 @@
+/**
+ * This work is protected under copyrights held by the members of the
+ * TOOP Project Consortium as indicated at
+ * http://wiki.ds.unipi.gr/display/TOOP/Contributors
+ * (c) 2018-2021. All rights reserved.
+ *
+ * This work is licensed under the EUPL 1.2.
+ *
+ *  = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+ *
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved
+ * by the European Commission - subsequent versions of the EUPL
+ * (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ *         https://joinup.ec.europa.eu/software/page/eupl
+ */
+package eu.toop.edm.schematron;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import com.helger.commons.annotation.IsSPIImplementation;
+import com.helger.regrep.RegRep4NamespaceContext;
+import com.helger.schematron.svrl.ISVRLLocationBeautifierSPI;
+
+import eu.toop.edm.xml.cccev.CCCEVNamespaceContext;
+
+/**
+ * Beautifier for Schematron error messages.
+ *
+ * @author Philip Helger
+ */
+@IsSPIImplementation
+public final class TOOPSVRLLocationBeautifier implements ISVRLLocationBeautifierSPI
+{
+  @Nullable
+  public String getReplacementText (@Nonnull final String sNamespaceURI, @Nonnull final String sLocalName)
+  {
+    String sPrefix = CCCEVNamespaceContext.getInstance ().getCustomPrefix (sNamespaceURI);
+    if (sPrefix == null)
+      sPrefix = RegRep4NamespaceContext.getInstance ().getCustomPrefix (sNamespaceURI);
+
+    if (sPrefix != null)
+      return sPrefix + ':' + sLocalName;
+
+    return null;
+  }
+}

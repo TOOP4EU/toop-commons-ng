@@ -1,0 +1,168 @@
+/**
+ * This work is protected under copyrights held by the members of the
+ * TOOP Project Consortium as indicated at
+ * http://wiki.ds.unipi.gr/display/TOOP/Contributors
+ * (c) 2018-2021. All rights reserved.
+ *
+ * This work is licensed under the EUPL 1.2.
+ *
+ *  = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+ *
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved
+ * by the European Commission - subsequent versions of the EUPL
+ * (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ *         https://joinup.ec.europa.eu/software/page/eupl
+ */
+package eu.toop.edm.model;
+
+import java.math.BigDecimal;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
+import javax.annotation.concurrent.NotThreadSafe;
+
+import com.helger.commons.equals.EqualsHelper;
+import com.helger.commons.hashcode.HashCodeGenerator;
+import com.helger.commons.math.MathHelper;
+import com.helger.commons.string.ToStringGenerator;
+
+import eu.toop.edm.jaxb.cv.cbc.QuantityType;
+
+/**
+ * Representation of an "Quantity" value.
+ *
+ * @author Philip Helger
+ */
+@Immutable
+public class QuantityPojo
+{
+  private final BigDecimal m_aValue;
+  private final String m_sUnitCode;
+
+  public QuantityPojo (@Nullable final BigDecimal aValue, @Nullable final String sUnitCode)
+  {
+    m_aValue = aValue;
+    m_sUnitCode = sUnitCode;
+  }
+
+  @Nullable
+  public final BigDecimal getValue ()
+  {
+    return m_aValue;
+  }
+
+  @Nullable
+  public final String getUnitCode ()
+  {
+    return m_sUnitCode;
+  }
+
+  @Nonnull
+  public QuantityType getAsQuantity ()
+  {
+    final QuantityType ret = new QuantityType ();
+    ret.setValue (m_aValue);
+    ret.setUnitCode (m_sUnitCode);
+    return ret;
+  }
+
+  @Nullable
+  public String getAsString ()
+  {
+    if (m_aValue != null)
+    {
+      if (m_sUnitCode != null)
+        return m_aValue.toString () + " " + m_sUnitCode;
+      return m_aValue.toString ();
+    }
+    return m_sUnitCode;
+  }
+
+  @Override
+  public boolean equals (final Object o)
+  {
+    if (o == this)
+      return true;
+    if (o == null || !getClass ().equals (o.getClass ()))
+      return false;
+    final QuantityPojo rhs = (QuantityPojo) o;
+    return EqualsHelper.equals (m_aValue, rhs.m_aValue) && EqualsHelper.equals (m_sUnitCode, rhs.m_sUnitCode);
+  }
+
+  @Override
+  public int hashCode ()
+  {
+    return new HashCodeGenerator (this).append (m_aValue).append (m_sUnitCode).getHashCode ();
+  }
+
+  @Override
+  public String toString ()
+  {
+    return new ToStringGenerator (this).append ("Value", m_aValue).append ("UnitCode", m_sUnitCode).getToString ();
+  }
+
+  @Nonnull
+  public static Builder builder ()
+  {
+    return new Builder ();
+  }
+
+  @Nonnull
+  public static Builder builder (@Nullable final QuantityType a)
+  {
+    final Builder ret = new Builder ();
+    if (a != null)
+      ret.value (a.getValue ()).unitCode (a.getUnitCode ());
+    return ret;
+  }
+
+  /**
+   * A builder for this class
+   *
+   * @author Philip Helger
+   */
+  @NotThreadSafe
+  public static class Builder
+  {
+    private BigDecimal m_aValue;
+    private String m_sUnitCode;
+
+    public Builder ()
+    {}
+
+    public Builder value (@Nonnull final long n)
+    {
+      return value (MathHelper.toBigDecimal (n));
+    }
+
+    @Nonnull
+    public Builder value (@Nonnull final double d)
+    {
+      return value (MathHelper.toBigDecimal (d));
+    }
+
+    @Nonnull
+    public Builder value (@Nullable final BigDecimal a)
+    {
+      m_aValue = a;
+      return this;
+    }
+
+    @Nonnull
+    public Builder unitCode (@Nullable final String s)
+    {
+      m_sUnitCode = s;
+      return this;
+    }
+
+    @Nonnull
+    public QuantityPojo build ()
+    {
+      return new QuantityPojo (m_aValue, m_sUnitCode);
+    }
+  }
+}
